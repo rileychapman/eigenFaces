@@ -1,9 +1,9 @@
-numberOfImages = 17;
-pictureWidth = 1000;
-pictureHeight = 1000;
+numberOfImages = 400;                       
+pictureWidth = 64;                       
+pictureHeight = 64;
 resolution = pictureWidth * pictureHeight;
 numberOfeigenFaces = 15;
-faceToCompose = 5;
+faceToCompose = 1;  % Choose which face (number from 1 to n) to decompose into its eigenfaces
 
 
 % Calculates the average of all the faces
@@ -35,7 +35,7 @@ end
 % Displays the image
 new_image = zeros(resolution,1);
 for i = 1:numberOfeigenFaces
-    weight = (double(eigenface(:,1)) - mean);
+    weight = (double(faces(:,faceToCompose)) - mean);
     weight = transpose(eigenface(:,i)) * weight;
     new_image = new_image + weight * eigenface(:,i);
 end
