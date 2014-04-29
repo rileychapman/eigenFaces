@@ -1,17 +1,18 @@
-numberOfImages = 400;                       
+% Initial variables
+numberOfImages = 417; % Size of training data
 pictureWidth = 64;                       
 pictureHeight = 64;
 resolution = pictureWidth * pictureHeight;
-numberOfeigenFaces = 15;
-faceToCompose = 1;  % Choose which face (number from 1 to n) to decompose into its eigenfaces
-
+numberOfeigenFaces = 20;
+faceToCompose = 2;  % Choose which face (number from 1 to n) to decompose into its eigenfaces
+faces = double(faces);
 
 % Calculates the average of all the faces
-sum = zeros(resolution,1);
+sumFaces = zeros(resolution,1);
 for i = 1:length(faces(1,:))
-    sum(:,1) = sum(:,1) + faces(:,i);
+    sumFaces(:,1) = sumFaces(:,1) + faces(:,i);
 end
-mean = sum/numberOfImages;
+mean = sumFaces/numberOfImages;
 
 % Calculates the difference between each face and the mean
 for i = 1:numberOfImages
@@ -21,25 +22,24 @@ end
 % Calculates the "covariance matrix" and its eigenstuff
 L = transpose(deviation) * deviation;
 [eigenvectors, eigenvalues] = eig(L);
+eigenface = deviation * eigenvectors;
 
-% Orders the eigenvectors by strongest to weakest
-for i = 1:length(eigenvectors)
-    eigenvectors_ordered(:,i) = eigenvectors(:,(numberOfImages+1-i));
+% Normalizes the eigenfaces
+for i = 1:numberOfImages
+    magnitude = sqrt(sum(eigenface(:,i).^2));
+    eigenface(:,i) = eigenface(:,i) / magnitude;
 end
 
-% Calculates the first 100 eigenfaces
-for i = 1:numberOfeigenFaces
-    eigenface(:,i) = deviation * eigenvectors_ordered(:,i);
-end
-
-% Displays the image
+% Calculates the weights
 new_image = zeros(resolution,1);
 for i = 1:numberOfeigenFaces
     weight = (double(faces(:,faceToCompose)) - mean);
     weight = transpose(eigenface(:,i)) * weight;
+    weight
     new_image = new_image + weight * eigenface(:,i);
 end
 
+% Displays the new image
 image_vector = mat2gray(new_image);
 counter = 1;
 for i = 1:pictureWidth
@@ -48,4 +48,4 @@ for i = 1:pictureWidth
         counter = counter + 1;
     end
 end
-imshow(image_matrix)
+imshow(image_matrix);
